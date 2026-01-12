@@ -47,10 +47,47 @@
             opacity: 0.95;
         }
         
-        .admin-toggle {
+        .user-info {
             position: fixed;
             top: 20px;
             right: 20px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .user-info.active {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .logout-btn {
+            background: rgba(239, 68, 68, 0.8);
+            border: none;
+            color: white;
+            padding: 6px 15px;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(239, 68, 68, 1);
+            transform: scale(1.05);
+        }
+        
+        .admin-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
             background: rgba(255,255,255,0.2);
             backdrop-filter: blur(10px);
             border: 2px solid rgba(255,255,255,0.3);
@@ -61,6 +98,11 @@
             font-weight: 600;
             transition: all 0.3s;
             z-index: 1000;
+            display: none;
+        }
+        
+        .admin-toggle.active {
+            display: block;
         }
         
         .admin-toggle:hover {
@@ -88,6 +130,126 @@
             padding: clamp(20px, 5vw, 40px);
             box-shadow: 0 20px 60px rgba(0,0,0,.3);
             margin-bottom: 20px;
+        }
+        
+        /* Auth Styles */
+        .auth-container {
+            max-width: 450px;
+            margin: 50px auto;
+        }
+        
+        .auth-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,.3);
+        }
+        
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-header h2 {
+            color: var(--dark);
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .auth-header p {
+            color: #6b7280;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        
+        .btn-auth {
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+        
+        .btn-auth:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-auth:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .auth-switch {
+            text-align: center;
+            margin-top: 20px;
+            color: #6b7280;
+        }
+        
+        .auth-switch a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .auth-switch a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .error-message.active {
+            display: block;
+        }
+        
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message.active {
+            display: block;
         }
         
         .categories {
@@ -385,18 +547,6 @@
             display: block;
         }
         
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .form-group input,
         .form-group textarea,
         .form-group select {
             width: 100%;
@@ -407,7 +557,6 @@
             transition: border-color 0.3s;
         }
         
-        .form-group input:focus,
         .form-group textarea:focus,
         .form-group select:focus {
             outline: none;
@@ -539,9 +688,16 @@
         }
         
         @media (max-width: 768px) {
-            .admin-toggle {
+            .user-info {
                 top: 10px;
                 right: 10px;
+                padding: 8px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .admin-toggle {
+                top: 10px;
+                left: 10px;
                 padding: 8px 16px;
                 font-size: 0.9rem;
             }
@@ -561,7 +717,12 @@
     </style>
 </head>
 <body>
-    <button class="admin-toggle" onclick="toggleAdmin()">⚙️ Admin</button>
+    <div class="user-info" id="userInfo">
+        <span id="userName">User</span>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <button class="admin-toggle" id="adminToggle" onclick="toggleAdmin()">⚙️ Admin</button>
     
     <div class="container">
         <header>
@@ -569,8 +730,83 @@
             <p>Test Your Health & Finance Knowledge</p>
         </header>
 
+        <!-- Login Screen -->
+        <div id="login" class="screen active">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Welcome Back!</h2>
+                        <p>Login to continue your learning journey</p>
+                    </div>
+                    
+                    <div class="error-message" id="loginError"></div>
+                    
+                    <form onsubmit="handleLogin(event)">
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="loginEmail" required placeholder="Enter your email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="loginPassword" required placeholder="Enter your password">
+                        </div>
+                        
+                        <button type="submit" class="btn-auth" id="loginBtn">Login</button>
+                    </form>
+                    
+                    <div class="auth-switch">
+                        Don't have an account? <a onclick="showSignup()">Sign Up</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Signup Screen -->
+        <div id="signup" class="screen">
+            <div class="auth-container">
+                <div class="auth-card">
+                    <div class="auth-header">
+                        <h2>Create Account</h2>
+                        <p>Join us to start your quiz journey</p>
+                    </div>
+                    
+                    <div class="error-message" id="signupError"></div>
+                    <div class="success-message" id="signupSuccess"></div>
+                    
+                    <form onsubmit="handleSignup(event)">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="signupName" required placeholder="Enter your full name">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Email</label>
+                            <input type="email" id="signupEmail" required placeholder="Enter your email">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Password</label>
+                            <input type="password" id="signupPassword" required minlength="6" placeholder="Minimum 6 characters">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Confirm Password</label>
+                            <input type="password" id="signupConfirmPassword" required placeholder="Re-enter password">
+                        </div>
+                        
+                        <button type="submit" class="btn-auth" id="signupBtn">Create Account</button>
+                    </form>
+                    
+                    <div class="auth-switch">
+                        Already have an account? <a onclick="showLogin()">Login</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Home Screen -->
-        <div id="home" class="screen active">
+        <div id="home" class="screen">
             <div class="card">
                 <h2 style="margin-bottom: 10px;">Choose a Category</h2>
                 <p style="color: #6b7280; margin-bottom: 20px;">Select a quiz category to test your knowledge</p>
@@ -724,6 +960,9 @@
     </div>
 
     <script>
+        // API Configuration - Replace with your actual backend URL
+        const API_URL = 'https://your-backend-api.com/api';
+        
         // Initialize quiz data from localStorage or use defaults
         let quizData = JSON.parse(localStorage.getItem('quizData')) || {
             health: [
@@ -752,7 +991,147 @@
             ]
         };
 
+        let currentUser = JSON.parse(localStorage.getItem('currentUser')) || null;
         let cat, qs, idx = 0, ans = [], sc = 0;
+
+        // Check authentication on load
+        window.onload = function() {
+            if (currentUser) {
+                showHome();
+            } else {
+                show('login');
+            }
+        };
+
+        // Authentication Functions
+        async function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const btn = document.getElementById('loginBtn');
+            const errorDiv = document.getElementById('loginError');
+            
+            btn.disabled = true;
+            btn.textContent = 'Logging in...';
+            errorDiv.classList.remove('active');
+            
+            try {
+                // Simulated API call - Replace with actual backend
+                // const response = await fetch(`${API_URL}/auth/login`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ email, password })
+                // });
+                
+                // Simulated response for demo
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Check demo credentials
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                const user = users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    currentUser = { name: user.name, email: user.email, role: user.role || 'user' };
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    showHome();
+                } else {
+                    throw new Error('Invalid email or password');
+                }
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.add('active');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Login';
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('signupConfirmPassword').value;
+            const btn = document.getElementById('signupBtn');
+            const errorDiv = document.getElementById('signupError');
+            const successDiv = document.getElementById('signupSuccess');
+            
+            errorDiv.classList.remove('active');
+            successDiv.classList.remove('active');
+            
+            if (password !== confirmPassword) {
+                errorDiv.textContent = 'Passwords do not match';
+                errorDiv.classList.add('active');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.textContent = 'Creating Account...';
+            
+            try {
+                // Simulated API call - Replace with actual backend
+                // const response = await fetch(`${API_URL}/auth/signup`, {
+                //     method: 'POST',
+                //     headers: { 'Content-Type': 'application/json' },
+                //     body: JSON.stringify({ name, email, password })
+                // });
+                
+                // Simulated response for demo
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                // Store user in localStorage (demo only)
+                const users = JSON.parse(localStorage.getItem('users')) || [];
+                
+                if (users.find(u => u.email === email)) {
+                    throw new Error('Email already registered');
+                }
+                
+                users.push({ name, email, password, role: 'user' });
+                localStorage.setItem('users', JSON.stringify(users));
+                
+                successDiv.textContent = '✅ Account created successfully! Please login.';
+                successDiv.classList.add('active');
+                
+                e.target.reset();
+                
+                setTimeout(() => showLogin(), 2000);
+            } catch (error) {
+                errorDiv.textContent = error.message;
+                errorDiv.classList.add('active');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Create Account';
+            }
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                currentUser = null;
+                localStorage.removeItem('currentUser');
+                show('login');
+                document.getElementById('userInfo').classList.remove('active');
+                document.getElementById('adminToggle').classList.remove('active');
+            }
+        }
+
+        function showLogin() {
+            show('login');
+        }
+
+        function showSignup() {
+            show('signup');
+        }
+
+        function showHome() {
+            show('home');
+            document.getElementById('userInfo').classList.add('active');
+            document.getElementById('userName').textContent = currentUser.name;
+            
+            // Show admin toggle if user is admin
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminToggle').classList.add('active');
+            }
+        }
 
         // Save data to localStorage
         function saveData() {
@@ -775,6 +1154,11 @@
 
         // Toggle admin panel
         function toggleAdmin() {
+            if (currentUser.role !== 'admin') {
+                alert('Access denied. Admin privileges required.');
+                return;
+            }
+            
             const adminScreen = document.getElementById('admin');
             if (adminScreen.classList.contains('active')) {
                 show('home');
@@ -937,6 +1321,44 @@
             document.getElementById('icon').textContent = icon;
             document.getElementById('message').textContent = msg;
             show('results');
+            
+            // Save quiz result to backend (optional)
+            saveQuizResult(cat, sc, corr, total);
+        }
+
+        async function saveQuizResult(category, score, correct, total) {
+            try {
+                // Uncomment when backend is ready
+                // await fetch(`${API_URL}/quiz/results`, {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'Authorization': `Bearer ${currentUser.token}`
+                //     },
+                //     body: JSON.stringify({
+                //         userId: currentUser.id,
+                //         category,
+                //         score,
+                //         correct,
+                //         total,
+                //         timestamp: new Date().toISOString()
+                //     })
+                // });
+                
+                // For now, save to localStorage
+                const results = JSON.parse(localStorage.getItem('quizResults')) || [];
+                results.push({
+                    user: currentUser.email,
+                    category,
+                    score,
+                    correct,
+                    total,
+                    timestamp: new Date().toISOString()
+                });
+                localStorage.setItem('quizResults', JSON.stringify(results));
+            } catch (error) {
+                console.error('Error saving quiz result:', error);
+            }
         }
 
         function review() {
